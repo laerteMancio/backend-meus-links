@@ -1,24 +1,28 @@
 {
-  "name": "backend",
+  "name": "backend-eccomerce-fones",
   "version": "1.0.0",
-  "main": "api/index.js",
+  "description": "",
+  "main": "index.js",
   "scripts": {
-    "dev": "nodemon server.js",
-    "start": "node server.js",
-    "vercel-dev": "vercel dev"
-  },
+  "test": "echo \"Error: no test specified\" && exit 1",
+  "start": "node api/server.js",
+  "dev": "nodemon api/server.js",
+  "dev-local": "nodemon api/server.local.js"
+},
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "description": "",
   "dependencies": {
+    "bcryptjs": "^3.0.2",
+    "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
-    "dotenv": "^17.2.0",
-    "express": "^4.21.2",
-    "mysql2": "^3.14.1",
+    "dotenv": "^16.4.7",
+    "express": "^5.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "mysql2": "^3.14.0",
     "serverless-http": "^3.2.0"
   },
   "devDependencies": {
-    "nodemon": "^3.1.10"
+    "nodemon": "^3.1.9"
   }
 }
