@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const db = require("../../db");
+const pool = require('../../db');  
 
 router.get("/", async (req, res) => {
   const { categoria, busca, destaque } = req.query;
@@ -20,18 +20,39 @@ router.get("/", async (req, res) => {
     params.push(termo, termo, termo);
   }
 
-  console.log("Query SQL:", sql);
-  console.log("Parametros:", params);
-
   try {
     const [rows] = await pool.query(sql, params);
     console.log(`Query executada, retornou ${rows.length} itens.`);
-    res.json(rows);
+
+    const BACKEND_URL = "https://backend-meus-links.vercel.app";
+
+    // Ajustar a URL da imagem para cada produto
+    const produtosAjustados = rows.map(produto => {
+      let imgUrl = produto.img || "";
+
+      // Se for URL com localhost, substituir
+      if (imgUrl.startsWith("http://localhost:3001")) {
+        imgUrl = imgUrl.replace("http://localhost:3001", BACKEND_URL);
+      }
+
+      // Se for caminho relativo, montar a URL completa
+      else if (imgUrl.startsWith("/imagens")) {
+        imgUrl = BACKEND_URL + imgUrl;
+      }
+
+      return {
+        ...produto,
+        img: imgUrl,
+      };
+    });
+
+    res.json(produtosAjustados);
   } catch (err) {
     console.error("Erro ao buscar produtos:", err);
     res.status(500).json({ erro: "Erro interno ao buscar produtos" });
   }
 });
+
 
 router.get("/proximo-codigo", async (req, res) => {
   try {
@@ -46,7 +67,7 @@ router.get("/proximo-codigo", async (req, res) => {
   }
 });
 
-router.post("/produtos", async (req, res) => {
+router.post("/", async (req, res) => {
   const { titulo, descricao, categoria, url, img, destaque } = req.body;
 
   try {
@@ -72,16 +93,19 @@ router.post("/produtos", async (req, res) => {
 
     await pool.query(sql, params);
 
-    res.status(201).json({
-      mensagem: "Produto criado com sucesso",
-      codigo: codigoFormatado,
-    });
+    res
+      .status(201)
+      .json({
+        mensagem: "Produto criado com sucesso",
+        codigo: codigoFormatado,
+      });
   } catch (err) {
     res.status(500).json({ erro: "Erro ao criar produto" });
   }
 });
 
-router.put("/produtos/:id", async (req, res) => {
+
+router.put("/:id", async (req, res) => {
   const { id } = req.params;
   const { codigo, titulo, descricao, categoria, url, img, destaque } = req.body;
 
@@ -113,7 +137,8 @@ router.put("/produtos/:id", async (req, res) => {
   }
 });
 
-router.delete("/produtos/:id", async (req, res) => {
+
+router.delete("/:id", async (req, res) => {
   const { id } = req.params;
 
   try {
@@ -121,12 +146,12 @@ router.delete("/produtos/:id", async (req, res) => {
     const [result] = await pool.query(sql, [id]);
 
     if (result.affectedRows === 0) {
-      return res.status(404).json({ erro: "Produto não encontrado" });
+      return res.status(404).json({ erro: 'Produto não encontrado' });
     }
 
-    res.json({ mensagem: "Produto excluído com sucesso" });
+    res.json({ mensagem: 'Produto excluído com sucesso' });
   } catch (err) {
-    res.status(500).json({ erro: "Erro ao excluir produto" });
+    res.status(500).json({ erro: 'Erro ao excluir produto' });
   }
 });
 
