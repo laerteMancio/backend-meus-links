@@ -12,8 +12,8 @@ dotenv.config();
 const app = express();
 
 // Defina uma lista de origens permitidas
-const allowedOrigins = [
-  "https://ecommerce-fones.vercel.app",
+const allowedOrigins = [  
+  "https://www.queroesseachadobr.com.br",
   "http://localhost:5174",
 ];
 
