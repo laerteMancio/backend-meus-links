@@ -14,6 +14,7 @@ const app = express();
 // Defina uma lista de origens permitidas
 const allowedOrigins = [  
   "https://www.queroesseachadobr.com.br",
+  "http://localhost:5173",
   "http://localhost:5174",
 ];
 
